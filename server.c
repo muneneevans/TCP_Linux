@@ -4,10 +4,51 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <pthread.h>
+
+int sendpeerports( int port)
+{
+	
+	int n ,i ; 
+	int clientSocket;
+	char buffer[1024];
+	struct sockaddr_in serverAddr;
+	struct sockaddr_storage serverStorage;
+	socklen_t addr_size;
+
+
+	printf("sending ports");
+	//client socket
+	clientSocket = socket(PF_INET, SOCK_STREAM, 0);
+
+	//set server values
+	serverAddr.sin_family = AF_INET;	
+	serverAddr.sin_port = htons(port);	
+	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");	
+	memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
+
+	for( i = 0 ; i < 5 ; i++){
+		//connect to server
+		addr_size = sizeof serverAddr;
+		connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
+
+		
+		//get a  message and send to the server
+		sprintf(buffer, "%d", port);
+		//strcpy(buffer, 'from server');
+
+		n = write(clientSocket , buffer , strlen(buffer));
+	}
+
+	return 0;
+	}
+
+
 
 
 int main(){
 	//client();
+	pthread_t pth ;
 	int clientports[5] , i ; 
 	char clientports_char[5] ; 
   int welcomeSocket, newSocket , clientcount;
@@ -44,19 +85,13 @@ int main(){
 	  
 	  //read message
 	  recv(newSocket, buffer, 1024, 0);
-	  printf("received: %s" , buffer);
+	  printf("\n server has received: %s" , buffer);
 	  clientports[clientcount] = atoi(buffer);
 	  //printf("port is: %d", clientports[clientcount]);
-
-
-		for( i = 0 ; i < 4 ; i++)
-			{
-				
-				printf("members %d\n" ,clientports[i]);
-				}
-	  //send respose
-	  strcpy(buffer,clientports);
-	  send(newSocket,buffer,14,0);
+		
+		
+	sendpeerports(clientports[clientcount] );
+	  
   }
 	
   return 0;
