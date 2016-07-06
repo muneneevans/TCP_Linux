@@ -58,9 +58,7 @@ int main(){
 	struct sockaddr_in serverAddr;
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
-
-
-
+	
 	callserver();
 
 	//create socket
@@ -75,7 +73,7 @@ int main(){
 	//bind to socket
 	bind(welcomeSocket, (struct sockaddr *) &serverAddr, sizeof(serverAddr));
 
-	if(listen(welcomeSocket,5)==0)
+	if(listen(welcomeSocket,50)==0)
 	printf("Listening\n");
 	else
 	printf("Error\n");
@@ -91,6 +89,11 @@ int main(){
 		//send response
 		//strcpy(buffer,"client 1\n");
 		//send(newSocket,buffer,10,0);
+
+
+		//read response
+		recv(newSocket, buffer, 1024, 0);
+		printf("Data received: %s",buffer);   
 	}
 
 	return 0;

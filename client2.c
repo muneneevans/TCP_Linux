@@ -20,7 +20,7 @@ int callserver(){
 
 	//set server values
 	serverAddr.sin_family = AF_INET;	
-	serverAddr.sin_port = htons(5500);	
+	serverAddr.sin_port = htons(2400);	
 	serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");	
 	memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);  
 
@@ -76,6 +76,7 @@ int main(){
 	  //accept connection
 	  addr_size = sizeof serverStorage;
 	  while(newSocket = accept(welcomeSocket, (struct sockaddr *) &serverStorage, &addr_size)){
+	  
 	  
 	  //read message
 	  recv(newSocket, buffer, 1024, 0);
