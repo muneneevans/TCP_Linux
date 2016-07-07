@@ -7,11 +7,11 @@
 #include <stdlib.h>
 
 
-
+int peers[10] , peercount  ;
 void *StartListening(void *port)
 {
 	int clients[10], myport;
-	int welcomeSocket, newSocket , clientcount ;
+	int welcomeSocket, newSocket ;
 	char buffer[1024] , peerport[4];
 	struct sockaddr_in serverAddr , cli_addr;
 	struct sockaddr_storage serverStorage;
@@ -34,7 +34,7 @@ void *StartListening(void *port)
 
 	//listen
 	if(listen(welcomeSocket,5)==0)
-	printf("peer is listening \n");
+	printf("\npeer is listening \n");
 	else
 	printf("Error\n");
 
@@ -45,16 +45,17 @@ void *StartListening(void *port)
 	while(1){
 	newSocket = accept(welcomeSocket, (struct sockaddr *) &cli_addr, &clilen);
 		//diplay the client port
-		printf("\n peer on port: %d" , cli_addr.sin_port 	);
-					
-		//reply with client port
-		sprintf(peerport , "%d" , cli_addr.sin_port  );
-		strcpy(buffer, "acl");
-		send(newSocket,buffer,strlen(buffer),0);
+		//printf("\n peer on port: %d" , cli_addr.sin_port 	);
 		
 		//read message
-		while(recv(newSocket, buffer, 1024, 0)){
-		printf("%s" , buffer);}
+		recv(newSocket, buffer, 1024, 0);
+		printf("\nmessage received: %s" , buffer);
+					
+		//reply with client port		
+		strcpy(buffer, "acknowledged");
+		send(newSocket,buffer,strlen(buffer),0);
+		
+		
 
   }
 
@@ -86,20 +87,21 @@ void SendMessage(void *port )
 	connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
 	
 	//get a  message and send to the server
-	printf("plase enter the message: ");
+	printf("\nsending  message: ");
 	bzero(buffer, 256) ; 
-	fgets(buffer, 255, stdin);
+	//fgets(buffer, 255, stdin);
+	strcpy(buffer , "hello from me");
 
-	//n = write(clientSocket , buffer , strlen(buffer));
+	n = write(clientSocket , buffer , strlen(buffer));
 	
 	//read response
 	recv(clientSocket, buffer, 1024, 0);
-	printf("response: %s",buffer);   
+	printf("\n peer response: %s",buffer);   
 	return NULL ; 
-	}
+}
 
 int ConnectToServer(){
-	int n , myport , peers[10]	,peercount ;   
+	int n , myport   ;   
 	int clientSocket;
 	char buffer[1024];
 	struct sockaddr_in serverAddr;
@@ -132,19 +134,18 @@ int ConnectToServer(){
 	token = strtok(buffer, ",");
 	while(token != NULL)
 	{
-		printf("token %s" , token);
+		peers[peercount] = atoi(token);		
 		token = strtok(NULL, ",");
+		peercount++ ; 
 		}
 	
-	//myport = (int) atoi(buffer);
-	//get a  message and send to the server
-	printf("plase enter the message: ");
-	bzero(buffer, 256) ; 
-	fgets(buffer, 255, stdin);
+	
+	bzero(buffer, 256) ; 	
+	strcpy(buffer , "hello");
 
 	//n = write(clientSocket , buffer , strlen(buffer));
 
-	return 10;
+	return peers[0];
 }
 
 
@@ -152,20 +153,42 @@ int ConnectToServer(){
 
 int main()
 {
+	int randomnumber, peerport , messagescount;
 	pthread_t pth , pth2; 
 	int myport ; 
+	randomnumber = 0 ;
 	myport = ConnectToServer();
 	printf("my port %d" , myport);
 	
 	pthread_create(&pth , NULL , StartListening , (void*)myport);
 	
+	printf("peer count %d\n " , peercount);
+	
 	//pthread_create(&pth2 , NULL , SendMessage , 5500);
-	//SendMessage(5504);
 	
+	//printf("\nenter peer port");
+	//scanf("%d" , &peerport);
+	//SendMessage(peerport);
 	
-	
-	
-	
+	if(peercount == 1 )
+	{
+		printf("there are no other peers to connect with");
 	}
+	else
+	{
+		
+		while(randomnumber == 0 )
+		{
+			randomnumber = rand() % peercount;
+		}
+		//printf("selected peer %d\n", randomnumber);
+		printf("selected peer %d\n", peers[randomnumber]);
+		for(messagescount = 1 ; messagescount <=5 ; messagescount++)
+		{
+			SendMessage(peers[randomnumber]);
+		}
+    }
+	getchar();
+}
 
 

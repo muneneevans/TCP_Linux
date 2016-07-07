@@ -69,6 +69,7 @@ int main(){
 			clients[clientcount] = cli_addr.sin_port ;
 		}
 		
+		bzero(outbuffer , 1024);
 		strcpy(outbuffer, "");
 		tempclients[0] = cli_addr.sin_port ;
 		sprintf(clientport , "%d" , tempclients[0] );
