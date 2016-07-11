@@ -71,6 +71,7 @@ void SendMessage(void *port )
 	struct sockaddr_in serverAddr;
 	struct sockaddr_storage serverStorage;
 	socklen_t addr_size;
+	char me[4] ; 
 
 	senderport = (int) port ; 
 	//client socket
@@ -90,7 +91,9 @@ void SendMessage(void *port )
 	printf("\nsending  message: ");
 	bzero(buffer, 256) ; 
 	//fgets(buffer, 255, stdin);
-	strcpy(buffer , "hello from me");
+	sprintf(me , "%d" , peers[0] );
+	strcpy(buffer , "hello from ");
+	strcat(buffer , me);
 
 	n = write(clientSocket , buffer , strlen(buffer));
 	
