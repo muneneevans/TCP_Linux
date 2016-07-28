@@ -5,10 +5,14 @@
 This is a client server application that allows for clients to connect to a server then connect to their peers
 
 
+
+
 **SETTING UP**
 **********************************************
 
 Clone the repository and you are done. Make sure you have gcc running
+
+
 
 
 
